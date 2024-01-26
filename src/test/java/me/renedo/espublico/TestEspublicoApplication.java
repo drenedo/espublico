@@ -13,6 +13,7 @@ import org.testcontainers.utility.DockerImageName;
 public class TestEspublicoApplication {
 
     private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(DockerImageName.parse("postgres:latest"))
+            .withInitScript("schema.sql")
             .withDatabaseName("espublico")
             .withUsername("test")
             .withPassword("test");
