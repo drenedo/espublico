@@ -12,16 +12,22 @@ import jakarta.persistence.Table;
 public class RegionEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "country_generator")
-    @SequenceGenerator(name = "country_generator", sequenceName = "region_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "region_generator")
+    @SequenceGenerator(name = "region_generator", sequenceName = "region_id_seq", allocationSize = 1)
     private Integer id;
 
     private String name;
 
     public RegionEntity() {
+
     }
 
     public RegionEntity(String name) {
+        this.name = name;
+    }
+
+    public RegionEntity(Integer id, String name) {
+        this.id = id;
         this.name = name;
     }
 

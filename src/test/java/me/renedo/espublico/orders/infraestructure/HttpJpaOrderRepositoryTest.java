@@ -10,15 +10,12 @@ import org.mockito.Mockito;
 
 import me.renedo.espublico.orders.domain.Country;
 import me.renedo.espublico.orders.domain.CountryMother;
-import me.renedo.espublico.orders.domain.CountryRepository;
 import me.renedo.espublico.orders.domain.ItemType;
 import me.renedo.espublico.orders.domain.ItemTypeMother;
-import me.renedo.espublico.orders.domain.ItemTypeRepository;
 import me.renedo.espublico.orders.domain.Order;
 import me.renedo.espublico.orders.domain.PageOfOrders;
 import me.renedo.espublico.orders.domain.Region;
 import me.renedo.espublico.orders.domain.RegionMother;
-import me.renedo.espublico.orders.domain.RegionRepository;
 import me.renedo.espublico.orders.infraestructure.rest.HttpOrderRepository;
 import me.renedo.espublico.orders.infraestructure.rest.HttpOrderRepository.OrderDTO;
 import me.renedo.espublico.orders.infraestructure.rest.HttpOrderRepository.PageDTO;
@@ -28,11 +25,11 @@ import me.renedo.espublico.orders.infraestructure.rest.PageDTOMother;
 class HttpJpaOrderRepositoryTest {
 
     private final HttpOrderRepository httpOrderRepository = Mockito.mock(HttpOrderRepository.class);
-    private final CountryRepository countryRepository = Mockito.mock(CountryRepository.class);
-    private final ItemTypeRepository itemTypeRepository = Mockito.mock(ItemTypeRepository.class);
-    private final RegionRepository regionRepository = Mockito.mock(RegionRepository.class);
-    private final HttpJpaOrderRepository repository =
-            new HttpJpaOrderRepository(httpOrderRepository, regionRepository, countryRepository, itemTypeRepository);
+    private final JpaCountryRepository countryRepository = Mockito.mock(JpaCountryRepository.class);
+    private final JpaItemTypeRepository itemTypeRepository = Mockito.mock(JpaItemTypeRepository.class);
+    private final JpaRegionRepository regionRepository = Mockito.mock(JpaRegionRepository.class);
+    private final HttpPageOfOrderRepository repository =
+            new HttpPageOfOrderRepository(httpOrderRepository, regionRepository, countryRepository, itemTypeRepository);
 
     @BeforeEach
     public void reset_mockito() {

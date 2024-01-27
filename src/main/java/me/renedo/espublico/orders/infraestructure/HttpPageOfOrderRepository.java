@@ -9,35 +9,33 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
 import me.renedo.espublico.orders.domain.Country;
-import me.renedo.espublico.orders.domain.CountryRepository;
 import me.renedo.espublico.orders.domain.ItemType;
-import me.renedo.espublico.orders.domain.ItemTypeRepository;
 import me.renedo.espublico.orders.domain.Order;
 import me.renedo.espublico.orders.domain.OrderId;
 import me.renedo.espublico.orders.domain.PageOfOrders;
 import me.renedo.espublico.orders.domain.PageOfOrdersRepository;
 import me.renedo.espublico.orders.domain.Priority;
 import me.renedo.espublico.orders.domain.Region;
-import me.renedo.espublico.orders.domain.RegionRepository;
 import me.renedo.espublico.orders.domain.SalesChannel;
 import me.renedo.espublico.orders.infraestructure.rest.HttpOrderRepository;
 import me.renedo.espublico.orders.infraestructure.rest.HttpOrderRepository.PageDTO;
 
 @Component
-public class HttpJpaOrderRepository implements PageOfOrdersRepository {
+public class HttpPageOfOrderRepository implements PageOfOrdersRepository {
 
     private final static DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     private final HttpOrderRepository httpOrderRepository;
 
-    private final RegionRepository regionRepository;
+    private final JpaRegionRepository regionRepository;
 
-    private final CountryRepository countryRepository;
+    private final JpaCountryRepository countryRepository;
 
-    private final ItemTypeRepository itemTypeRepository;
+    private final JpaItemTypeRepository itemTypeRepository;
 
-    public HttpJpaOrderRepository(HttpOrderRepository httpOrderRepository, RegionRepository regionRepository, CountryRepository countryRepository,
-            ItemTypeRepository itemTypeRepository) {
+    public HttpPageOfOrderRepository(HttpOrderRepository httpOrderRepository, JpaRegionRepository regionRepository,
+            JpaCountryRepository countryRepository,
+            JpaItemTypeRepository itemTypeRepository) {
         this.httpOrderRepository = httpOrderRepository;
         this.regionRepository = regionRepository;
         this.countryRepository = countryRepository;

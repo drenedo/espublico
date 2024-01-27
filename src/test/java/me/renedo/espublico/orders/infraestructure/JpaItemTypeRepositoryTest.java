@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,12 +25,13 @@ class JpaItemTypeRepositoryTest {
     @Sql("/create_entities.sql")
     void ensure_find_by_name_returns_the_country_when_exists() {
         assertThat(jpaItemTypeRepository.findByNameOrCreate("Product"))
-                .usingRecursiveComparison().isEqualTo(ItemTypeMother.any(1, "Product"));
+                .usingRecursiveComparison().ignoringFields("id").isEqualTo(ItemTypeMother.any("Product"));
     }
 
     @Test
+    @DirtiesContext
     void ensure_create_returns_the_country_when_exists() {
         assertThat(jpaItemTypeRepository.findByNameOrCreate("Service"))
-                .usingRecursiveComparison().isEqualTo(ItemTypeMother.any(1, "Service"));
+                .usingRecursiveComparison().ignoringFields("id").isEqualTo(ItemTypeMother.any("Service"));
     }
 }

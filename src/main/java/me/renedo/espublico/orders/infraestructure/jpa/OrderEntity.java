@@ -58,6 +58,29 @@ public class OrderEntity {
     @Column(name = "total_profit", precision = 5)
     private BigDecimal totalProfit;
 
+    public OrderEntity() {
+    }
+
+    public OrderEntity(Long id, UUID uuid, RegionEntity region, CountryEntity country, ItemTypeEntity itemType, String salesChannel, String priority,
+            LocalDate date, LocalDate shipDate, Integer unitsSold, BigDecimal unitPrice, BigDecimal unitCost, BigDecimal totalRevenue,
+            BigDecimal totalCost, BigDecimal totalProfit) {
+        this.id = id;
+        this.uuid = uuid;
+        this.region = region;
+        this.country = country;
+        this.itemType = itemType;
+        this.salesChannel = salesChannel;
+        this.priority = priority;
+        this.date = date;
+        this.shipDate = shipDate;
+        this.unitsSold = unitsSold;
+        this.unitPrice = unitPrice;
+        this.unitCost = unitCost;
+        this.totalRevenue = totalRevenue;
+        this.totalCost = totalCost;
+        this.totalProfit = totalProfit;
+    }
+
     public CountryEntity getCountry() {
         return country;
     }

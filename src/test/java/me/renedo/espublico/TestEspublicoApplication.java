@@ -16,7 +16,8 @@ public class TestEspublicoApplication {
             .withInitScript("schema.sql")
             .withDatabaseName("espublico")
             .withUsername("test")
-            .withPassword("test");
+            .withPassword("test")
+            .withReuse(true);
 
     public static void main(String[] args) {
         SpringApplication.from(EspublicoApplication::main).with(TestEspublicoApplication.class).run(args);
