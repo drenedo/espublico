@@ -2,6 +2,7 @@ package me.renedo.espublico.orders.infraestructure;
 
 import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 import java.util.Set;
 import java.util.stream.IntStream;
@@ -50,12 +51,13 @@ class JpaOrderRepositoryTest {
         repository.saveAll(orders);
 
         // Then
-        Set<OrderEntity> sortedEntities = StreamSupport.stream(orderEntityRepository.findAll().spliterator(), false).collect(toSet());
-        assertThat(sortedEntities).hasSize(40);
-        assertThat(sortedEntities).usingRecursiveComparison()
-                .comparingOnlyFields("id", "uuid", "date", "shipDate", "unitsSold", "unitPrice", "unitCost",
-                        "totalRevenue", "totalCost", "totalProfit")
-                .isEqualTo(orders);
+        Set<OrderEntity> entities = StreamSupport.stream(orderEntityRepository.findAll().spliterator(), false).collect(toSet());
+        assertThat(entities).hasSize(40);
+        entities.forEach(entity -> orders.stream().filter(order -> order.getId().getValue().equals(entity.getId()))
+                .findFirst().ifPresentOrElse(order -> assertThat(entity).usingRecursiveComparison()
+                        .comparingOnlyFields("uuid", "date", "shipDate", "unitsSold", "unitPrice", "unitCost",
+                                "totalRevenue", "totalCost", "totalProfit")
+                        .isEqualTo(order), () -> fail("Entity not mached with any order")));
     }
 
     @AfterEach
