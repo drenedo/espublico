@@ -22,16 +22,6 @@ class ImportUseCaseTest {
     private final PageOfOrdersRepository pageOfOrdersRepository = Mockito.mock(PageOfOrdersRepository.class);
     private final OrderRepository orderRepository = Mockito.mock(OrderRepository.class);
 
-    private static void assertSizesOfOrdersCalls(ArgumentCaptor<List<Order>> captor, List<Integer> values) {
-        Set<Integer> sizes = captor.getAllValues().stream().map(List::size).collect(Collectors.toSet());
-        values.forEach(value -> assertThat(sizes).contains(value));
-    }
-
-    private ImportUseCase givenImportUseCase(int httpPageSize, int jpaPageSize) {
-        Mockito.reset(pageOfOrdersRepository, orderRepository);
-        return new ImportUseCase(pageOfOrdersRepository, orderRepository, httpPageSize, jpaPageSize);
-    }
-
     @Test
     void should_call_repositories_only_once() {
         // Given
@@ -81,6 +71,7 @@ class ImportUseCaseTest {
         assertSizesOfOrdersCalls(captor, List.of(50, 30));
     }
 
+
     @Test
     void should_call_page_orders_repository_two_times() {
         // Given
@@ -98,7 +89,16 @@ class ImportUseCaseTest {
         verify(pageOfOrdersRepository, Mockito.times(1)).getPage(firstPageOfOrders.getNextUrl());
         ArgumentCaptor<List<Order>> captor = ArgumentCaptor.forClass(List.class);
         verify(orderRepository, Mockito.times(3)).saveAll(captor.capture());
-        Set<Integer> sizes = captor.getAllValues().stream().map(List::size).collect(Collectors.toSet());
         assertSizesOfOrdersCalls(captor, List.of(50, 30, 42));
+    }
+
+    private static void assertSizesOfOrdersCalls(ArgumentCaptor<List<Order>> captor, List<Integer> values) {
+        Set<Integer> sizes = captor.getAllValues().stream().map(List::size).collect(Collectors.toSet());
+        values.forEach(value -> assertThat(sizes).contains(value));
+    }
+
+    private ImportUseCase givenImportUseCase(int httpPageSize, int jpaPageSize) {
+        Mockito.reset(pageOfOrdersRepository, orderRepository);
+        return new ImportUseCase(pageOfOrdersRepository, orderRepository, httpPageSize, jpaPageSize);
     }
 }

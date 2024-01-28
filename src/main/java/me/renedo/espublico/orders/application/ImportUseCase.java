@@ -40,16 +40,16 @@ public class ImportUseCase {
         }
     }
 
+    private void processOrders(PageOfOrders page) {
+        chopOrdersInPages(page.getOrders()).forEach(orderRepository::saveAll);
+    }
+
     private Set<List<Order>> chopOrdersInPages(List<Order> list) {
         return IntStream.iterate(0, i -> i + jpaPageSize)
                 .limit((list.size() + jpaPageSize - 1) / jpaPageSize)
                 .boxed()
                 .map(i -> list.subList(i, Math.min(i + jpaPageSize, list.size())))
                 .collect(Collectors.toSet());
-    }
-
-    private void processOrders(PageOfOrders page) {
-        chopOrdersInPages(page.getOrders()).forEach(orderRepository::saveAll);
     }
 
     private void truncateTables() {
