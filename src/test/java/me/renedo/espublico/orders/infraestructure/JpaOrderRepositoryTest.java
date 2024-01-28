@@ -14,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 
 import me.renedo.espublico.TestEspublicoApplication;
+import me.renedo.espublico.orders.domain.Order;
 import me.renedo.espublico.orders.domain.OrderMother;
 import me.renedo.espublico.orders.infraestructure.jpa.CountryEntityRepository;
 import me.renedo.espublico.orders.infraestructure.jpa.ItemTypeEntityRepository;
@@ -42,12 +43,19 @@ class JpaOrderRepositoryTest {
 
     @Test
     void ensure_persists_a_group_of_orders() {
+        // Given
+        Set<Order> orders = IntStream.range(0, 40).mapToObj(i -> OrderMother.any()).collect(toSet());
+
         // When
-        repository.saveAll(IntStream.range(0, 40).mapToObj(i -> OrderMother.any()).collect(toSet()));
+        repository.saveAll(orders);
 
         // Then
-        Set<OrderEntity> all = StreamSupport.stream(orderEntityRepository.findAll().spliterator(), false).collect(toSet());
-        assertThat(all).hasSize(40);
+        Set<OrderEntity> sortedEntities = StreamSupport.stream(orderEntityRepository.findAll().spliterator(), false).collect(toSet());
+        assertThat(sortedEntities).hasSize(40);
+        assertThat(sortedEntities).usingRecursiveComparison()
+                .comparingOnlyFields("id", "uuid", "date", "shipDate", "unitsSold", "unitPrice", "unitCost",
+                        "totalRevenue", "totalCost", "totalProfit")
+                .isEqualTo(orders);
     }
 
     @AfterEach

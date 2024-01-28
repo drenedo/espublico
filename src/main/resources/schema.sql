@@ -2,6 +2,8 @@ CREATE TABLE IF NOT EXISTS region
 (
     id
     SERIAL
+    CONSTRAINT
+    region_pkey
     PRIMARY
     KEY,
     name
@@ -9,11 +11,14 @@ CREATE TABLE IF NOT EXISTS region
     NOT
     NULL
 );
+CREATE INDEX IF NOT EXISTS region_name_idx ON region(name);
 
 CREATE TABLE IF NOT EXISTS country
 (
     id
     SERIAL
+    CONSTRAINT
+    country_pkey
     PRIMARY
     KEY,
     name
@@ -21,11 +26,14 @@ CREATE TABLE IF NOT EXISTS country
     NOT
     NULL
 );
+CREATE INDEX IF NOT EXISTS country_name_idx ON region(name);
 
 CREATE TABLE IF NOT EXISTS item_type
 (
     id
     SERIAL
+    CONSTRAINT
+    item_type_pkey
     PRIMARY
     KEY,
     name
@@ -33,6 +41,7 @@ CREATE TABLE IF NOT EXISTS item_type
     NOT
     NULL
 );
+CREATE INDEX IF NOT EXISTS item_type_name_idx ON region(name);
 
 CREATE TABLE IF NOT EXISTS sales_order
 (
