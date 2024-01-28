@@ -1,8 +1,8 @@
 package me.renedo.espublico.orders.domain;
 
-import java.util.Set;
+import java.util.List;
 
 public interface OrderRepository {
 
-    void saveAll(Set<Order> orders);
+    void saveAll(List<Order> orders);
 }

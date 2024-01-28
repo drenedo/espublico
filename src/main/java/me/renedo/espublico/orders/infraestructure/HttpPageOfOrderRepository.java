@@ -72,7 +72,7 @@ public class HttpPageOfOrderRepository implements PageOfOrdersRepository {
                         order.unitsSold(), BigDecimal.valueOf(order.unitPrice()), BigDecimal.valueOf(order.unitCost()),
                         BigDecimal.valueOf(order.totalRevenue()), BigDecimal.valueOf(order.totalCost()),
                         BigDecimal.valueOf(order.totalProfit())))
-                .collect(Collectors.toSet()), page.links().next());
+                .collect(Collectors.toList()), page.links().next());
     }
 
     private Priority toPriority(String priority) {

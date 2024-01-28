@@ -1,6 +1,6 @@
 package me.renedo.espublico.orders.infraestructure;
 
-import java.util.Set;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
@@ -30,7 +30,7 @@ public class JpaOrderRepository implements OrderRepository {
 
     @Override
     @Transactional
-    public void saveAll(Set<Order> orders) {
+    public void saveAll(List<Order> orders) {
         orderEntityRepository.saveAll(orders.stream().map(JpaOrderRepository::toEntity).collect(Collectors.toSet()));
     }
 

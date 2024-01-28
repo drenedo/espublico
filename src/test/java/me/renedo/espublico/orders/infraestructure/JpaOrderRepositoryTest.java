@@ -1,9 +1,11 @@
 package me.renedo.espublico.orders.infraestructure;
 
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.IntStream;
 import java.util.stream.StreamSupport;
@@ -45,7 +47,7 @@ class JpaOrderRepositoryTest {
     @Test
     void ensure_persists_a_group_of_orders() {
         // Given
-        Set<Order> orders = IntStream.range(0, 40).mapToObj(i -> OrderMother.any()).collect(toSet());
+        List<Order> orders = IntStream.range(0, 40).mapToObj(i -> OrderMother.any()).collect(toList());
 
         // When
         repository.saveAll(orders);

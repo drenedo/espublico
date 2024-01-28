@@ -1,14 +1,14 @@
 package me.renedo.espublico.orders.domain;
 
-import java.util.Set;
+import java.util.List;
 
 public class PageOfOrders {
 
-    private final Set<Order> orders;
+    private final List<Order> orders;
 
     private final String nextUrl;
 
-    public PageOfOrders(Set<Order> orders, String nextUrl) {
+    public PageOfOrders(List<Order> orders, String nextUrl) {
         this.orders = orders;
         this.nextUrl = nextUrl;
     }
@@ -17,7 +17,7 @@ public class PageOfOrders {
         return nextUrl;
     }
 
-    public Set<Order> getOrders() {
+    public List<Order> getOrders() {
         return orders;
     }
 }
