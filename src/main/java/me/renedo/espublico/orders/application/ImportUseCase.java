@@ -1,6 +1,7 @@
 package me.renedo.espublico.orders.application;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -30,18 +31,35 @@ public class ImportUseCase {
         this.jpaPageSize = jpaPageSize;
     }
 
-    public void execute() {
+    public ImportSummary execute() {
         truncateTables();
         PageOfOrders page = pageOfOrdersRepository.getFirstPage(httpPageSize);
-        processOrders(page);
+        ImportSummary summary = processOrders(page);
         while (page.getNextUrl() != null) {
             page = pageOfOrdersRepository.getPage(page.getNextUrl());
-            processOrders(page);
+            summary = summary.merge(processOrders(page));
         }
+        return summary;
     }
 
-    private void processOrders(PageOfOrders page) {
+    private static Map<String, Integer> mapOfOne(String value) {
+        return Map.of(value, 1);
+    }
+
+    private ImportSummary processOrders(PageOfOrders page) {
+        ImportSummary summary = page.getOrders().stream()
+                .map(ImportUseCase::toImportSummary)
+                .reduce(ImportSummary::merge).orElseGet(() -> new ImportSummary(Map.of(), List.of()));
         chopOrdersInPages(page.getOrders()).forEach(orderRepository::saveAll);
+        return summary;
+    }
+
+    private static ImportSummary toImportSummary(Order order) {
+        return new ImportSummary(Map.of("region", mapOfOne(order.getRegion().getName()),
+                "country", mapOfOne(order.getCountry().getName()),
+                "itemType", mapOfOne(order.getItemType().getName()),
+                "salesChannel", mapOfOne(order.getSalesChannel().toString()),
+                "priority", mapOfOne(order.getPriority().toString())), List.of());
     }
 
     private Set<List<Order>> chopOrdersInPages(List<Order> list) {

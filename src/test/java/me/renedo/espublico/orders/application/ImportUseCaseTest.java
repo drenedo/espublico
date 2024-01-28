@@ -22,6 +22,14 @@ class ImportUseCaseTest {
     private final PageOfOrdersRepository pageOfOrdersRepository = Mockito.mock(PageOfOrdersRepository.class);
     private final OrderRepository orderRepository = Mockito.mock(OrderRepository.class);
 
+    private static void assertSummaySize(ImportSummary summary, int expectedSize) {
+        assertThat(summary.getSummary().get("region").values().stream().mapToInt(Integer::intValue).sum()).isEqualTo(expectedSize);
+        assertThat(summary.getSummary().get("country").values().stream().mapToInt(Integer::intValue).sum()).isEqualTo(expectedSize);
+        assertThat(summary.getSummary().get("itemType").values().stream().mapToInt(Integer::intValue).sum()).isEqualTo(expectedSize);
+        assertThat(summary.getSummary().get("priority").values().stream().mapToInt(Integer::intValue).sum()).isEqualTo(expectedSize);
+        assertThat(summary.getSummary().get("salesChannel").values().stream().mapToInt(Integer::intValue).sum()).isEqualTo(expectedSize);
+    }
+
     @Test
     void should_call_repositories_only_once() {
         // Given
@@ -30,11 +38,13 @@ class ImportUseCaseTest {
         doReturn(pageOfOrders).when(pageOfOrdersRepository).getFirstPage(10);
 
         // When
-        useCase.execute();
+        ImportSummary summary = useCase.execute();
 
         // Then
         verify(pageOfOrdersRepository, Mockito.times(1)).getFirstPage(10);
         verify(orderRepository, Mockito.times(1)).saveAll(pageOfOrders.getOrders());
+        assertSummaySize(summary, 5);
+
     }
 
     @Test
@@ -45,13 +55,14 @@ class ImportUseCaseTest {
         doReturn(pageOfOrders).when(pageOfOrdersRepository).getFirstPage(100);
 
         // When
-        useCase.execute();
+        ImportSummary summary = useCase.execute();
 
         // Then
         verify(pageOfOrdersRepository, Mockito.times(1)).getFirstPage(100);
         ArgumentCaptor<List<Order>> captor = ArgumentCaptor.forClass(List.class);
         verify(orderRepository, Mockito.times(10)).saveAll(captor.capture());
         assertSizesOfOrdersCalls(captor, List.of(10));
+        assertSummaySize(summary, 100);
     }
 
     @Test
@@ -62,15 +73,15 @@ class ImportUseCaseTest {
         doReturn(pageOfOrders).when(pageOfOrdersRepository).getFirstPage(100);
 
         // When
-        useCase.execute();
+        ImportSummary summary = useCase.execute();
 
         // Then
         verify(pageOfOrdersRepository, Mockito.times(1)).getFirstPage(100);
         ArgumentCaptor<List<Order>> captor = ArgumentCaptor.forClass(List.class);
         verify(orderRepository, Mockito.times(2)).saveAll(captor.capture());
         assertSizesOfOrdersCalls(captor, List.of(50, 30));
+        assertSummaySize(summary, 80);
     }
-
 
     @Test
     void should_call_page_orders_repository_two_times() {
@@ -82,7 +93,7 @@ class ImportUseCaseTest {
         doReturn(secondPageOfOrders).when(pageOfOrdersRepository).getPage(firstPageOfOrders.getNextUrl());
 
         // When
-        useCase.execute();
+        ImportSummary summary = useCase.execute();
 
         // Then
         verify(pageOfOrdersRepository, Mockito.times(1)).getFirstPage(80);
@@ -90,6 +101,7 @@ class ImportUseCaseTest {
         ArgumentCaptor<List<Order>> captor = ArgumentCaptor.forClass(List.class);
         verify(orderRepository, Mockito.times(3)).saveAll(captor.capture());
         assertSizesOfOrdersCalls(captor, List.of(50, 30, 42));
+        assertSummaySize(summary, 80 + 42);
     }
 
     private static void assertSizesOfOrdersCalls(ArgumentCaptor<List<Order>> captor, List<Integer> values) {
