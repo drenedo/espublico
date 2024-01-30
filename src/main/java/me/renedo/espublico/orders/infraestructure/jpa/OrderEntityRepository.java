@@ -1,6 +1,7 @@
 package me.renedo.espublico.orders.infraestructure.jpa;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface OrderEntityRepository extends CrudRepository<OrderEntity, Integer> {
+public interface OrderEntityRepository extends JpaRepository<OrderEntity, Integer> {
+
 }

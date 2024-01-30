@@ -7,12 +7,15 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import me.renedo.espublico.orders.domain.Order;
 import me.renedo.espublico.orders.domain.OrderRepository;
 import me.renedo.espublico.orders.domain.PageOfOrders;
 import me.renedo.espublico.orders.domain.PageOfOrdersRepository;
+import me.renedo.espublico.orders.instrumentation.ImportInstrumentation;
 
+@Component
 public class ImportUseCase {
 
     private final PageOfOrdersRepository pageOfOrdersRepository;
@@ -33,12 +36,14 @@ public class ImportUseCase {
 
     public ImportSummary execute() {
         truncateTables();
+        ImportInstrumentation importInstrumentation = ImportInstrumentation.of(httpPageSize);
         PageOfOrders page = pageOfOrdersRepository.getFirstPage(httpPageSize);
-        ImportSummary summary = processOrders(page);
+        ImportSummary summary = processOrders(page, importInstrumentation);
         while (page.getNextUrl() != null) {
             page = pageOfOrdersRepository.getPage(page.getNextUrl());
-            summary = summary.merge(processOrders(page));
+            summary = summary.merge(processOrders(page, importInstrumentation));
         }
+        importInstrumentation.finish();
         return summary;
     }
 
@@ -46,12 +51,18 @@ public class ImportUseCase {
         return Map.of(value, 1);
     }
 
-    private ImportSummary processOrders(PageOfOrders page) {
-        ImportSummary summary = page.getOrders().stream()
-                .map(ImportUseCase::toImportSummary)
-                .reduce(ImportSummary::merge).orElseGet(() -> new ImportSummary(Map.of(), List.of()));
-        chopOrdersInPages(page.getOrders()).forEach(orderRepository::saveAll);
-        return summary;
+    private ImportSummary processOrders(PageOfOrders page, ImportInstrumentation importInstrumentation) {
+        try {
+            ImportSummary summary = page.getOrders().stream()
+                    .map(ImportUseCase::toImportSummary)
+                    .reduce(ImportSummary::merge).orElseGet(() -> new ImportSummary(Map.of(), List.of()));
+            chopOrdersInPages(page.getOrders()).forEach(orderRepository::saveAll);
+            importInstrumentation.registerPageInformation(page);
+            return summary;
+        } catch (Exception e) {
+            importInstrumentation.registerError(e);
+            return new ImportSummary(Map.of(), List.of(new ImportSummary.Error(page.getPage(), e.getMessage())));
+        }
     }
 
     private static ImportSummary toImportSummary(Order order) {
@@ -71,6 +82,6 @@ public class ImportUseCase {
     }
 
     private void truncateTables() {
-        //TODO truncate tables
+        orderRepository.truncate();
     }
 }

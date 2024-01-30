@@ -29,6 +29,11 @@ public class JpaOrderRepository implements OrderRepository {
     }
 
     @Override
+    public void truncate() {
+        orderEntityRepository.deleteAllInBatch();
+    }
+
+    @Override
     @Transactional
     public void saveAll(List<Order> orders) {
         orderEntityRepository.saveAll(orders.stream().map(JpaOrderRepository::toEntity).collect(Collectors.toSet()));

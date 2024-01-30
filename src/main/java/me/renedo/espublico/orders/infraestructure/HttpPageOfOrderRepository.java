@@ -23,7 +23,7 @@ import me.renedo.espublico.orders.infraestructure.rest.HttpOrderRepository.PageD
 @Component
 public class HttpPageOfOrderRepository implements PageOfOrdersRepository {
 
-    private final static DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private final static DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
 
     private final HttpOrderRepository httpOrderRepository;
 
@@ -65,7 +65,7 @@ public class HttpPageOfOrderRepository implements PageOfOrdersRepository {
     }
 
     private PageOfOrders toPageOfOrders(PageDTO page) {
-        return new PageOfOrders(page.content().stream()
+        return new PageOfOrders(page.page(), page.content().stream()
                 .map(order -> new Order(UUID.fromString(order.uuid()), new OrderId(order.id()), toRegion(order.region()),
                         toCountry(order.country()), toItemType(order.itemType()), toSalesChannel(order.salesChannel()),
                         toPriority(order.priority()), toLocalDate(order.date()), toLocalDate(order.shipDate()),
@@ -75,7 +75,7 @@ public class HttpPageOfOrderRepository implements PageOfOrdersRepository {
                 .collect(Collectors.toList()), page.links().next());
     }
 
-    private Priority toPriority(String priority) {
+    private static Priority toPriority(String priority) {
         return switch (priority) {
             case "H" -> Priority.HIGH;
             case "M" -> Priority.MEDIUM;
@@ -89,7 +89,7 @@ public class HttpPageOfOrderRepository implements PageOfOrdersRepository {
         return regionRepository.findByNameOrCreate(regionName);
     }
 
-    private SalesChannel toSalesChannel(String salesChannel) {
+    private static SalesChannel toSalesChannel(String salesChannel) {
         return switch (salesChannel) {
             case "Offline" -> SalesChannel.OFFLINE;
             case "Online" -> SalesChannel.ONLINE;

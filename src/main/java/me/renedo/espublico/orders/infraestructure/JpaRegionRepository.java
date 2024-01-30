@@ -1,5 +1,7 @@
 package me.renedo.espublico.orders.infraestructure;
 
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import me.renedo.espublico.orders.domain.Region;
@@ -9,6 +11,7 @@ import me.renedo.espublico.orders.infraestructure.jpa.RegionEntity;
 import me.renedo.espublico.orders.infraestructure.jpa.RegionEntityRepository;
 
 @Component
+@CacheConfig(cacheNames = "region")
 public class JpaRegionRepository implements RegionRepository {
 
     private final RegionEntityRepository regionEntityRepository;
@@ -18,6 +21,7 @@ public class JpaRegionRepository implements RegionRepository {
     }
 
     @Override
+    @Cacheable
     public Region findByNameOrCreate(String name) {
         return regionEntityRepository.findByName(name)
                 .map(JpaRegionRepository::toDomain)

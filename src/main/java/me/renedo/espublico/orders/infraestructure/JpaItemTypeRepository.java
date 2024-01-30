@@ -1,5 +1,7 @@
 package me.renedo.espublico.orders.infraestructure;
 
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import me.renedo.espublico.orders.domain.ItemType;
@@ -9,6 +11,7 @@ import me.renedo.espublico.orders.infraestructure.jpa.ItemTypeEntity;
 import me.renedo.espublico.orders.infraestructure.jpa.ItemTypeEntityRepository;
 
 @Component
+@CacheConfig(cacheNames = "itemTypes")
 public class JpaItemTypeRepository implements ItemTypeRepository {
 
     private final ItemTypeEntityRepository itemTypeRepository;
@@ -18,6 +21,7 @@ public class JpaItemTypeRepository implements ItemTypeRepository {
     }
 
     @Override
+    @Cacheable
     public ItemType findByNameOrCreate(String name) {
         return itemTypeRepository.findByName(name)
                 .map(JpaItemTypeRepository::toDomain)

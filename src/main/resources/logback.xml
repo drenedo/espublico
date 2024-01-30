@@ -6,7 +6,11 @@
         </encoder>
     </appender>
 
+    <!--
     <logger name="org.hibernate.SQL" level="DEBUG"/>
+    -->
+
+    <logger name="me.renedo" level="INFO"/>
 
     <root level="INFO" additivity="false">
         <appender-ref ref="STDOUT"/>

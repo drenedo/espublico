@@ -17,8 +17,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 
 import me.renedo.espublico.TestEspublicoApplication;
+import me.renedo.espublico.orders.domain.Country;
+import me.renedo.espublico.orders.domain.ItemType;
 import me.renedo.espublico.orders.domain.Order;
 import me.renedo.espublico.orders.domain.OrderMother;
+import me.renedo.espublico.orders.domain.Region;
 import me.renedo.espublico.orders.infraestructure.jpa.CountryEntityRepository;
 import me.renedo.espublico.orders.infraestructure.jpa.ItemTypeEntityRepository;
 import me.renedo.espublico.orders.infraestructure.jpa.OrderEntity;
@@ -44,10 +47,22 @@ class JpaOrderRepositoryTest {
     @Autowired
     private RegionEntityRepository regionEntityRepository;
 
+    @Autowired
+    private JpaCountryRepository jpaCountryEntityRepository;
+
+    @Autowired
+    private JpaRegionRepository jpaRegionRepository;
+
+    @Autowired
+    private JpaItemTypeRepository jpaItemTypeRepository;
+
     @Test
     void ensure_persists_a_group_of_orders() {
         // Given
-        List<Order> orders = IntStream.range(0, 40).mapToObj(i -> OrderMother.any()).collect(toList());
+        Region region = jpaRegionRepository.findByNameOrCreate("any-region");
+        Country country = jpaCountryEntityRepository.findByNameOrCreate("any-country");
+        ItemType itemType = jpaItemTypeRepository.findByNameOrCreate("any-item-type");
+        List<Order> orders = IntStream.range(0, 40).mapToObj(i -> OrderMother.any(country, region, itemType)).collect(toList());
 
         // When
         repository.saveAll(orders);

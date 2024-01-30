@@ -1,5 +1,7 @@
 package me.renedo.espublico.orders.infraestructure;
 
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import me.renedo.espublico.orders.domain.Country;
@@ -9,6 +11,7 @@ import me.renedo.espublico.orders.infraestructure.jpa.CountryEntity;
 import me.renedo.espublico.orders.infraestructure.jpa.CountryEntityRepository;
 
 @Component
+@CacheConfig(cacheNames = "countries")
 public class JpaCountryRepository implements CountryRepository {
 
     private final CountryEntityRepository countryEntityRepository;
@@ -18,6 +21,7 @@ public class JpaCountryRepository implements CountryRepository {
     }
 
     @Override
+    @Cacheable
     public Country findByNameOrCreate(String name) {
         return countryEntityRepository.findByName(name)
                 .map(JpaCountryRepository::toDomain)

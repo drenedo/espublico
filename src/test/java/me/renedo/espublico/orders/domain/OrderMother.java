@@ -20,4 +20,15 @@ public class OrderMother {
                 BigDecimal.valueOf(RANDOM.nextDouble()).setScale(2, RoundingMode.HALF_EVEN),
                 BigDecimal.valueOf(RANDOM.nextDouble()).setScale(2, RoundingMode.HALF_EVEN));
     }
+
+    public static Order any(Country country, Region region, ItemType itemType) {
+        return new Order(UUID.randomUUID(), new OrderId(RANDOM.nextLong()), region, country, itemType,
+                SalesChannel.values()[RANDOM.nextInt(SalesChannel.values().length)], Priority.values()[RANDOM.nextInt(Priority.values().length)],
+                LocalDate.now(), LocalDate.now(), RANDOM.nextInt(),
+                BigDecimal.valueOf(RANDOM.nextDouble()).setScale(2, RoundingMode.HALF_EVEN),
+                BigDecimal.valueOf(RANDOM.nextDouble()).setScale(2, RoundingMode.HALF_EVEN),
+                BigDecimal.valueOf(RANDOM.nextDouble()).setScale(2, RoundingMode.HALF_EVEN),
+                BigDecimal.valueOf(RANDOM.nextDouble()).setScale(2, RoundingMode.HALF_EVEN),
+                BigDecimal.valueOf(RANDOM.nextDouble()).setScale(2, RoundingMode.HALF_EVEN));
+    }
 }
