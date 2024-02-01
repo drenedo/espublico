@@ -45,7 +45,7 @@ public class JpaOrderRepository implements OrderRepository {
     @Override
     public List<Order> getPage(int page, int size) {
         Page<OrderEntity> orders = orderEntityRepository.findAll(PageRequest.of(page, size, Sort.by("id")));
-        return orders.getContent().stream().map(this::toDomain).collect(Collectors.toList());
+        return orders.getContent().stream().map(this::toDomain).toList();
     }
 
     private Country toCountry(Integer id) {

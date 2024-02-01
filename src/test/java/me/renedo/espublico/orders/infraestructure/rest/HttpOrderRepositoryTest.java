@@ -13,12 +13,12 @@ import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import me.renedo.espublico.orders.infraestructure.rest.HttpOrderRepository.PageDTO;
 
 @WireMockTest(httpPort = 8089)
-public class HttpOrderRepositoryTest {
+class HttpOrderRepositoryTest {
 
     private final HttpOrderRepository httpOrderRepository = new HttpOrderRepository("http://127.0.0.1:8089");
 
     @Test
-    public void check_page_and_ensure_mapping_is_correct() {
+    void check_page_and_ensure_mapping_is_correct() {
         // Given
         mockUrl();
 
@@ -30,7 +30,7 @@ public class HttpOrderRepositoryTest {
     }
 
     @Test
-    public void check_page_by_url_and_ensure_mapping_is_correct() {
+    void check_page_by_url_and_ensure_mapping_is_correct() {
         // Given
         mockUrl();
 

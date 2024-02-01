@@ -3,7 +3,6 @@ package me.renedo.espublico.orders.infraestructure;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -90,10 +89,10 @@ class HttpJpaOrderRepositoryTest {
         when(httpOrderRepository.getPage("some-url")).thenReturn(page);
 
         // When
-        RuntimeException thrown = Assertions.assertThrows(RuntimeException.class, () -> repository.getPage("some-url"));
+        PageOfOrders pageReturned = repository.getPage("some-url");
 
         // Then
-        assertThat(thrown.getMessage()).isEqualTo("Priority not supported");
+        assertThat(pageReturned.getOrders().get(0).getPriority()).isNull();
     }
 
     @Test
@@ -104,10 +103,10 @@ class HttpJpaOrderRepositoryTest {
         when(httpOrderRepository.getPage(1, 100)).thenReturn(page);
 
         // When
-        RuntimeException thrown = Assertions.assertThrows(RuntimeException.class, () -> repository.getFirstPage(100));
+        PageOfOrders pageReturned = repository.getFirstPage(100);
 
         // Then
-        assertThat(thrown.getMessage()).isEqualTo("Priority not supported");
+        assertThat(pageReturned.getOrders().get(0).getPriority()).isNull();
     }
 
     @Test
@@ -118,10 +117,10 @@ class HttpJpaOrderRepositoryTest {
         when(httpOrderRepository.getPage(1, 100)).thenReturn(page);
 
         // When
-        RuntimeException thrown = Assertions.assertThrows(RuntimeException.class, () -> repository.getFirstPage(100));
+        PageOfOrders pageReturned = repository.getFirstPage(100);
 
         // Then
-        assertThat(thrown.getMessage()).isEqualTo("Sales channel not supported");
+        assertThat(pageReturned.getOrders().get(0).getSalesChannel()).isNull();
     }
 
     @Test
@@ -132,9 +131,9 @@ class HttpJpaOrderRepositoryTest {
         when(httpOrderRepository.getPage("some-url")).thenReturn(page);
 
         // When
-        RuntimeException thrown = Assertions.assertThrows(RuntimeException.class, () -> repository.getPage("some-url"));
+        PageOfOrders pageReturned = repository.getPage("some-url");
 
         // Then
-        assertThat(thrown.getMessage()).isEqualTo("Sales channel not supported");
+        assertThat(pageReturned.getOrders().get(0).getSalesChannel()).isNull();
     }
 }

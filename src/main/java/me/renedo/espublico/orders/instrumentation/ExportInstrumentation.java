@@ -16,12 +16,18 @@ public class ExportInstrumentation {
 
     public void finish() {
         timer.stop();
-        log.info(timer.prettyPrint());
+        if (log.isInfoEnabled()) {
+            log.info("Final result for every process: {}", timer.prettyPrint());
+        }
     }
 
     public static ExportInstrumentation of(int pageSize) {
         log.info("Export orders with page size {}", pageSize);
         return new ExportInstrumentation(new StopWatch());
+    }
+
+    public void registerAnError(String message) {
+        log.error(message);
     }
 
     public void registerPageInformation(int page, int size) {

@@ -6,7 +6,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 
 public class ItemTypeMother {
 
-    private final static SecureRandom RANDOM = new SecureRandom();
+    private static final SecureRandom RANDOM = new SecureRandom();
 
     public static ItemType any() {
         return new ItemType(new ItemTypeId(RANDOM.nextInt()), RandomStringUtils.randomAlphanumeric(10));

@@ -34,6 +34,8 @@ public class ImportInstrumentation {
 
     public void finish() {
         timer.stop();
-        log.info(timer.prettyPrint());
+        if (log.isInfoEnabled()) {
+            log.info("Final result for every process: {}", timer.prettyPrint());
+        }
     }
 }

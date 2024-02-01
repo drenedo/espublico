@@ -22,8 +22,8 @@ import me.renedo.espublico.orders.instrumentation.ExportInstrumentation;
 @Component
 public class ExportUseCase {
 
-    private final static DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("d/M/yyyy");
-    private final static String[] CSV_HEADERS = {"Order ID", "Order Priority", "Order Date", "Region", "Country", "Item Type", "Sales Channel",
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("d/M/yyyy");
+    private static final String[] CSV_HEADERS = {"Order ID", "Order Priority", "Order Date", "Region", "Country", "Item Type", "Sales Channel",
             "Ship Date", "Units Sold", "Unit Price", "Unit Cost", "Total Revenue", "Total Cost", "Total Profit"};
 
     private final OrderRepository orderRepository;
@@ -35,16 +35,16 @@ public class ExportUseCase {
         this.pageSize = pageSize;
     }
 
-    public ExportInformation execute() {
+    public ExportInformation execute() throws IOException {
         Path file = getTemporalFile();
         ExportInstrumentation instrumentation = ExportInstrumentation.of(pageSize);
         List<Order> orders = orderRepository.getPage(0, pageSize);
-        appendOrdersToFile(file, orders, true);
+        appendOrdersToFile(file, orders, instrumentation, true);
         instrumentation.registerPageInformation(0, orders.size());
         int page = 1;
         while (orders.size() == pageSize) {
             orders = orderRepository.getPage(page, pageSize);
-            appendOrdersToFile(file, orders, false);
+            appendOrdersToFile(file, orders, instrumentation, false);
             instrumentation.registerPageInformation(page, orders.size());
             page++;
         }
@@ -52,33 +52,27 @@ public class ExportUseCase {
         return new ExportInformation(file.toAbsolutePath().toString());
     }
 
-    private static void appendOrdersToFile(Path path, List<Order> orders, boolean headers) {
+    private static void appendOrdersToFile(Path path, List<Order> orders, ExportInstrumentation instrumentation, boolean headers) throws IOException {
         try (BufferedWriter writer = Files.newBufferedWriter(path, StandardOpenOption.APPEND, StandardOpenOption.CREATE)) {
             CSVPrinter csvPrinter = new CSVPrinter(writer, headers ?
                     CSVFormat.Builder.create().setHeader(CSV_HEADERS).build() : CSVFormat.DEFAULT);
-            orders.forEach(getOrderConsumer(csvPrinter));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            orders.forEach(getOrderConsumer(instrumentation, csvPrinter));
         }
     }
 
-    private static Consumer<Order> getOrderConsumer(CSVPrinter csvPrinter) {
+    private static Consumer<Order> getOrderConsumer(ExportInstrumentation instrumentation, CSVPrinter csvPrinter) {
         return o -> {
             try {
                 csvPrinter.printRecord(o.getId().getValue(), o.getPriority().toString(), o.getDate().format(FORMATTER), o.getRegion().getName(),
                         o.getCountry().getName(), o.getItemType().getName(), o.getSalesChannel().toString(), o.getShipDate(), o.getUnitsSold(),
                         o.getUnitPrice(), o.getUnitCost(), o.getTotalRevenue(), o.getTotalCost(), o.getTotalProfit());
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                instrumentation.registerAnError(e.getMessage());
             }
         };
     }
 
-    private static Path getTemporalFile() {
-        try {
-            return File.createTempFile("orders", ".csv").toPath();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    private static Path getTemporalFile() throws IOException {
+        return File.createTempFile("orders", ".csv").toPath();
     }
 }

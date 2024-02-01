@@ -12,6 +12,16 @@ public class PageDTOMother {
         return new PageDTO(RANDOM.nextInt(100), Set.of(OrderDTOMother.any()), me.renedo.espublico.orders.infraestructure.rest.LinksDTOMother.any());
     }
 
+    public static PageDTO anyWithPriority(String priority) {
+        return new PageDTO(RANDOM.nextInt(100), Set.of(OrderDTOMother.anyWithPriority(priority)),
+                me.renedo.espublico.orders.infraestructure.rest.LinksDTOMother.any());
+    }
+
+    public static PageDTO anyWithSalesChanel(String salesChannel) {
+        return new PageDTO(RANDOM.nextInt(100), Set.of(OrderDTOMother.anyWithSalesChannel(salesChannel)),
+                me.renedo.espublico.orders.infraestructure.rest.LinksDTOMother.any());
+    }
+
     public static PageDTO any(HttpOrderRepository.OrderDTO orderDTO) {
         return new PageDTO(RANDOM.nextInt(100), Set.of(orderDTO), LinksDTOMother.any());
     }

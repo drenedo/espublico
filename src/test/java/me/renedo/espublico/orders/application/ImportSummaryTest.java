@@ -11,7 +11,7 @@ class ImportSummaryTest {
 
 
     @Test
-    public void should_join_errors() {
+    void should_join_errors() {
         // Given
         ImportSummary.Error error1 = ErrorMother.any();
         ImportSummary.Error error2 = ErrorMother.any();
@@ -26,7 +26,7 @@ class ImportSummaryTest {
     }
 
     @Test
-    public void should_merge_values() {
+    void should_merge_values() {
         // Given
         ImportSummary summary = ImportSummaryMother.anyOfMap("country", Map.of("Spain", 10, "France", 23), "region",
                 Map.of("EMEA", 42, "APAC", 12));
@@ -41,7 +41,7 @@ class ImportSummaryTest {
     }
 
     @Test
-    public void should_merge_values_when_empty() {
+    void should_merge_values_when_empty() {
         // Given
         ImportSummary summary = ImportSummaryMother.anyOfMap("country", Map.of(), "region", Map.of());
 

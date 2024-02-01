@@ -14,6 +14,12 @@ public class OrderDTOMother {
                 RANDOM.nextDouble(), RANDOM.nextDouble(), RANDOM.nextDouble(), RANDOM.nextDouble());
     }
 
+    public static OrderDTO anyWithSalesChannel(String salesChannel) {
+        return new OrderDTO(UUID.randomUUID().toString(), RANDOM.nextLong(), "any-region", "any-country", "any-item-type",
+                salesChannel, "C", "01/01/2024", "01/01/2024", RANDOM.nextInt(), RANDOM.nextDouble(),
+                RANDOM.nextDouble(), RANDOM.nextDouble(), RANDOM.nextDouble(), RANDOM.nextDouble());
+    }
+
     public static OrderDTO any(String uuid, Long id, String region, String country,
             String itemType, String salesChannel, String priority, String date,
             String shipDate, Integer unitsSold, Double unitPrice, Double unitCost,

@@ -3,7 +3,6 @@ package me.renedo.espublico.orders.application;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ImportSummary {
@@ -28,12 +27,10 @@ public class ImportSummary {
         HashMap<String, Map<String, Integer>> mergedSummary = new HashMap<>(summary);
         other.getSummary().forEach((field, values) -> {
             Map<String, Integer> mergedValues = new HashMap<>(mergedSummary.getOrDefault(field, new HashMap<>()));
-            values.forEach((value, count) -> {
-                mergedValues.put(value, mergedValues.getOrDefault(value, 0) + count);
-            });
+            values.forEach((value, count) -> mergedValues.put(value, mergedValues.getOrDefault(value, 0) + count));
             mergedSummary.put(field, mergedValues);
         });
-        return new ImportSummary(mergedSummary, Stream.concat(toStream(errors), toStream(other.getErrors())).collect(Collectors.toList()));
+        return new ImportSummary(mergedSummary, Stream.concat(toStream(errors), toStream(other.getErrors())).toList());
     }
 
     private static Stream<Error> toStream(List<Error> errors) {

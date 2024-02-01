@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
@@ -23,7 +22,7 @@ import me.renedo.espublico.orders.infraestructure.rest.HttpOrderRepository.PageD
 @Component
 public class HttpPageOfOrderRepository implements PageOfOrdersRepository {
 
-    private final static DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
 
     private final HttpOrderRepository httpOrderRepository;
 
@@ -72,7 +71,7 @@ public class HttpPageOfOrderRepository implements PageOfOrdersRepository {
                         order.unitsSold(), BigDecimal.valueOf(order.unitPrice()), BigDecimal.valueOf(order.unitCost()),
                         BigDecimal.valueOf(order.totalRevenue()), BigDecimal.valueOf(order.totalCost()),
                         BigDecimal.valueOf(order.totalProfit())))
-                .collect(Collectors.toList()), page.links().next());
+                .toList(), page.links().next());
     }
 
     private static Priority toPriority(String priority) {
@@ -81,7 +80,8 @@ public class HttpPageOfOrderRepository implements PageOfOrdersRepository {
             case "M" -> Priority.MEDIUM;
             case "L" -> Priority.LOW;
             case "C" -> Priority.CRITICAL;
-            default -> throw new RuntimeException("Priority not supported");
+            // If there is an error in the data, we will ignore it at this point and will be evident in persistence phase
+            default -> null;
         };
     }
 
@@ -93,7 +93,8 @@ public class HttpPageOfOrderRepository implements PageOfOrdersRepository {
         return switch (salesChannel) {
             case "Offline" -> SalesChannel.OFFLINE;
             case "Online" -> SalesChannel.ONLINE;
-            default -> throw new RuntimeException("Sales channel not supported");
+            // If there is an error in the data, we will ignore it at this point and will be evident in persistence phase
+            default -> null;
         };
     }
 }

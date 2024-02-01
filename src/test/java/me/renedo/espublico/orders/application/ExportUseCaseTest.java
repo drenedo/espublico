@@ -12,7 +12,6 @@ import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -46,11 +45,11 @@ class ExportUseCaseTest {
     void should_call_repositories_three_times_and_file_has_expected_lines() throws IOException {
         // Given
         ExportUseCase useCase = givenExportUseCase(10);
-        doReturn(IntStream.range(0, 10).mapToObj(i -> OrderMother.any()).collect(Collectors.toList()))
+        doReturn(IntStream.range(0, 10).mapToObj(i -> OrderMother.any()).toList())
                 .when(orderRepository).getPage(0, 10);
-        doReturn(IntStream.range(0, 10).mapToObj(i -> OrderMother.any()).collect(Collectors.toList()))
+        doReturn(IntStream.range(0, 10).mapToObj(i -> OrderMother.any()).toList())
                 .when(orderRepository).getPage(1, 10);
-        doReturn(IntStream.range(0, 3).mapToObj(i -> OrderMother.any()).collect(Collectors.toList()))
+        doReturn(IntStream.range(0, 3).mapToObj(i -> OrderMother.any()).toList())
                 .when(orderRepository).getPage(2, 10);
 
         // When

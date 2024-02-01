@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public class OrderMother {
 
-    private final static SecureRandom RANDOM = new SecureRandom();
+    private static final SecureRandom RANDOM = new SecureRandom();
 
     public static Order any() {
         return new Order(UUID.randomUUID(), new OrderId(RANDOM.nextLong()), RegionMother.any(), CountryMother.any(), ItemTypeMother.any(),

@@ -6,7 +6,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 
 public class CountryMother {
 
-    private final static SecureRandom RANDOM = new SecureRandom();
+    private static final SecureRandom RANDOM = new SecureRandom();
 
     public static Country any() {
         return new Country(new CountryId(RANDOM.nextInt()), RandomStringUtils.randomAlphanumeric(10));

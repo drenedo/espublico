@@ -1,6 +1,10 @@
 package me.renedo.espublico.orders.infraestructure.http;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import me.renedo.espublico.orders.application.ImportSummary;
@@ -20,4 +24,11 @@ public class GetImport {
         return importUseCase.execute();
     }
 
+
+    @ExceptionHandler({RuntimeException.class})
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseBody
+    private Error handleException(Exception e) {
+        return new Error(e.getMessage());
+    }
 }
