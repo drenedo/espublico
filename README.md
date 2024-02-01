@@ -17,7 +17,7 @@ To launch tests
 - Maven >= 3.0
 - Any container runtime (Docker, Podman, Minikube...)
 
-## Assumptions
+## Important assumptions
 
 - Some domain classes ar considered not variable, like Priority or Sales channel. On the contrary region, country, item type and sales channel are
   considered variable entities.
@@ -71,20 +71,25 @@ spring.jpa.properties.hibernate.jdbc.batch_size=100
 spring.datasource.url=jdbc:postgresql://localhost:5432/database
 spring.datasource.username=test
 spring.datasource.password=test
-orders.jpa.page-size=250
 ```
 
-### Rest API configurations
+### Import configuration
 
-Host of the rest API and page size of the requests.
+Host of the rest API, page size of the requests and size of the transactions.
 
 ```properties
 orders.rest.url=https://kata-espublicotech.g3stiona.com
-orders.http.page-size=500
+orders.import.http.page-size=500
+orders.import.jpa.page-size=250
 ```
 
-### Development
+### Export configuration
 
+The page size of the blocks of orders to be exported into the file.
+
+```properties
+orders.export.page-size=2500
+```
 
 
 

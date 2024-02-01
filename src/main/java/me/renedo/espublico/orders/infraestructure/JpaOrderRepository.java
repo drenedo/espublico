@@ -3,12 +3,16 @@ package me.renedo.espublico.orders.infraestructure;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import me.renedo.espublico.orders.domain.Country;
 import me.renedo.espublico.orders.domain.ItemType;
 import me.renedo.espublico.orders.domain.Order;
+import me.renedo.espublico.orders.domain.OrderId;
 import me.renedo.espublico.orders.domain.OrderRepository;
 import me.renedo.espublico.orders.domain.Priority;
 import me.renedo.espublico.orders.domain.Region;
@@ -24,8 +28,62 @@ public class JpaOrderRepository implements OrderRepository {
 
     private final OrderEntityRepository orderEntityRepository;
 
-    public JpaOrderRepository(OrderEntityRepository orderEntityRepository) {
+    private final JpaRegionRepository jpaRegionRepository;
+
+    private final JpaCountryRepository jpaCountryRepository;
+
+    private final JpaItemTypeRepository jpaItemTypeRepository;
+
+    public JpaOrderRepository(OrderEntityRepository orderEntityRepository, JpaRegionRepository jpaRegionRepository,
+            JpaCountryRepository jpaCountryRepository, JpaItemTypeRepository jpaItemTypeRepository) {
         this.orderEntityRepository = orderEntityRepository;
+        this.jpaRegionRepository = jpaRegionRepository;
+        this.jpaCountryRepository = jpaCountryRepository;
+        this.jpaItemTypeRepository = jpaItemTypeRepository;
+    }
+
+    @Override
+    public List<Order> getPage(int page, int size) {
+        Page<OrderEntity> orders = orderEntityRepository.findAll(PageRequest.of(page, size, Sort.by("id")));
+        return orders.getContent().stream().map(this::toDomain).collect(Collectors.toList());
+    }
+
+    private Country toCountry(Integer id) {
+        return jpaCountryRepository.findById(id);
+    }
+
+    private Order toDomain(OrderEntity orderEntity) {
+        return new Order(orderEntity.getUuid(), new OrderId(orderEntity.getId()), toRegion(orderEntity.getRegion().getId()),
+                toCountry(orderEntity.getCountry().getId()), toItemType(orderEntity.getItemType().getId()),
+                toSalesChannel(orderEntity.getSalesChannel()), toPriority(orderEntity.getPriority()),
+                orderEntity.getDate(), orderEntity.getShipDate(), orderEntity.getUnitsSold(), orderEntity.getUnitPrice(), orderEntity.getUnitCost(),
+                orderEntity.getTotalRevenue(), orderEntity.getTotalCost(), orderEntity.getTotalProfit());
+    }
+
+    private ItemType toItemType(Integer id) {
+        return jpaItemTypeRepository.findById(id);
+    }
+
+    private static Priority toPriority(String priority) {
+        return switch (priority) {
+            case "L" -> Priority.LOW;
+            case "M" -> Priority.MEDIUM;
+            case "H" -> Priority.HIGH;
+            case "C" -> Priority.CRITICAL;
+            default -> null;
+        };
+    }
+
+    private Region toRegion(Integer id) {
+        return jpaRegionRepository.findyId(id);
+    }
+
+    private static SalesChannel toSalesChannel(String salesChannel) {
+        return switch (salesChannel) {
+            case "N" -> SalesChannel.ONLINE;
+            case "F" -> SalesChannel.OFFLINE;
+            default -> null;
+        };
     }
 
     @Override

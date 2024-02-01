@@ -27,7 +27,7 @@ public class ImportUseCase {
     private final int jpaPageSize;
 
     public ImportUseCase(PageOfOrdersRepository pageOfOrdersRepository, OrderRepository orderRepository,
-            @Value("${orders.http.page-size}") int httpPageSize, @Value("${orders.jpa.page-size}") int jpaPageSize) {
+            @Value("${orders.import.http.page-size}") int httpPageSize, @Value("${orders.import.jpa.page-size}") int jpaPageSize) {
         this.pageOfOrdersRepository = pageOfOrdersRepository;
         this.orderRepository = orderRepository;
         this.httpPageSize = httpPageSize;

@@ -22,14 +22,6 @@ class ImportUseCaseTest {
     private final PageOfOrdersRepository pageOfOrdersRepository = Mockito.mock(PageOfOrdersRepository.class);
     private final OrderRepository orderRepository = Mockito.mock(OrderRepository.class);
 
-    private static void assertSummaySize(ImportSummary summary, int expectedSize) {
-        assertThat(summary.getSummary().get("region").values().stream().mapToInt(Integer::intValue).sum()).isEqualTo(expectedSize);
-        assertThat(summary.getSummary().get("country").values().stream().mapToInt(Integer::intValue).sum()).isEqualTo(expectedSize);
-        assertThat(summary.getSummary().get("itemType").values().stream().mapToInt(Integer::intValue).sum()).isEqualTo(expectedSize);
-        assertThat(summary.getSummary().get("priority").values().stream().mapToInt(Integer::intValue).sum()).isEqualTo(expectedSize);
-        assertThat(summary.getSummary().get("salesChannel").values().stream().mapToInt(Integer::intValue).sum()).isEqualTo(expectedSize);
-    }
-
     @Test
     void should_call_repositories_only_once() {
         // Given
@@ -104,13 +96,20 @@ class ImportUseCaseTest {
         assertSummaySize(summary, 80 + 42);
     }
 
+    private static void assertSummaySize(ImportSummary summary, int expectedSize) {
+        assertThat(summary.getSummary().get("region").values().stream().mapToInt(Integer::intValue).sum()).isEqualTo(expectedSize);
+        assertThat(summary.getSummary().get("country").values().stream().mapToInt(Integer::intValue).sum()).isEqualTo(expectedSize);
+        assertThat(summary.getSummary().get("itemType").values().stream().mapToInt(Integer::intValue).sum()).isEqualTo(expectedSize);
+        assertThat(summary.getSummary().get("priority").values().stream().mapToInt(Integer::intValue).sum()).isEqualTo(expectedSize);
+        assertThat(summary.getSummary().get("salesChannel").values().stream().mapToInt(Integer::intValue).sum()).isEqualTo(expectedSize);
+    }
+
     private static void assertSizesOfOrdersCalls(ArgumentCaptor<List<Order>> captor, List<Integer> values) {
         Set<Integer> sizes = captor.getAllValues().stream().map(List::size).collect(Collectors.toSet());
         values.forEach(value -> assertThat(sizes).contains(value));
     }
 
     private ImportUseCase givenImportUseCase(int httpPageSize, int jpaPageSize) {
-        Mockito.reset(pageOfOrdersRepository, orderRepository);
         return new ImportUseCase(pageOfOrdersRepository, orderRepository, httpPageSize, jpaPageSize);
     }
 }

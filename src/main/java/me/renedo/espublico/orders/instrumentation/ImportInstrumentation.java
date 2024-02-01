@@ -16,11 +16,6 @@ public class ImportInstrumentation {
         timer.start("page " + 0);
     }
 
-    public void finish() {
-        timer.stop();
-        log.info(timer.prettyPrint());
-    }
-
     public static ImportInstrumentation of(int pageSize) {
         log.info("Importing orders with page size {}", pageSize);
         return new ImportInstrumentation(new StopWatch());
@@ -35,5 +30,10 @@ public class ImportInstrumentation {
         log.info("Importing orders with page {} with size {} in {}ms - Total {}ms", page.getPage(), page.getOrders().size(),
                 timer.lastTaskInfo().getTimeMillis(), timer.getTotalTimeMillis());
         timer.start("page " + page.getPage());
+    }
+
+    public void finish() {
+        timer.stop();
+        log.info(timer.prettyPrint());
     }
 }

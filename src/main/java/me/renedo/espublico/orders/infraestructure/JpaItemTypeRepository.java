@@ -20,6 +20,10 @@ public class JpaItemTypeRepository implements ItemTypeRepository {
         this.itemTypeRepository = itemTypeRepository;
     }
 
+    public ItemType findById(Integer id) {
+        return itemTypeRepository.findById(id).map(JpaItemTypeRepository::toDomain).orElse(null);
+    }
+
     @Override
     @Cacheable
     public ItemType findByNameOrCreate(String name) {

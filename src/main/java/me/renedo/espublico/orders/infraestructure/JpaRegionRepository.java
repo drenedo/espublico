@@ -28,6 +28,11 @@ public class JpaRegionRepository implements RegionRepository {
                 .orElseGet(() -> create(name));
     }
 
+    @Cacheable
+    public Region findyId(Integer id) {
+        return regionEntityRepository.findById(id).map(JpaRegionRepository::toDomain).orElse(null);
+    }
+
     private Region create(String name) {
         RegionEntity regionEntity = new RegionEntity(name);
         RegionEntity saved = regionEntityRepository.save(regionEntity);

@@ -20,6 +20,11 @@ public class JpaCountryRepository implements CountryRepository {
         this.countryEntityRepository = countryEntityRepository;
     }
 
+    @Cacheable
+    public Country findById(Integer id) {
+        return countryEntityRepository.findById(id).map(JpaCountryRepository::toDomain).orElse(null);
+    }
+
     @Override
     @Cacheable
     public Country findByNameOrCreate(String name) {

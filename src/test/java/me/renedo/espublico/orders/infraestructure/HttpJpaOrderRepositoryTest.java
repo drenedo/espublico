@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -30,14 +29,6 @@ class HttpJpaOrderRepositoryTest {
     private final JpaRegionRepository regionRepository = Mockito.mock(JpaRegionRepository.class);
     private final HttpPageOfOrderRepository repository =
             new HttpPageOfOrderRepository(httpOrderRepository, regionRepository, countryRepository, itemTypeRepository);
-
-    @BeforeEach
-    public void reset_mockito() {
-        Mockito.reset(httpOrderRepository);
-        Mockito.reset(countryRepository);
-        Mockito.reset(itemTypeRepository);
-        Mockito.reset(regionRepository);
-    }
 
     @Test
     void test_first_page_when_data_is_correct() {
