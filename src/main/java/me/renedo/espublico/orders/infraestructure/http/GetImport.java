@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.reactive.function.client.WebClientException;
 
 import me.renedo.espublico.orders.application.ImportSummary;
 import me.renedo.espublico.orders.application.ImportUseCase;
@@ -25,7 +26,7 @@ public class GetImport {
     }
 
 
-    @ExceptionHandler({RuntimeException.class})
+    @ExceptionHandler({RuntimeException.class, WebClientException.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
     private Error handleException(Exception e) {
