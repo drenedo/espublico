@@ -37,8 +37,8 @@ class EspublicoImportUseCaseIntegrationTests {
     private JpaOrderRepository repository;
 
     private void assertResponseAndData(ImportSummary summary) {
-        assertThat(summary.getErrors()).hasSize(0);
-        assertThat(summary.getSummary().get("region").get("Sub-Saharan Africa")).isEqualTo(75);
+        assertThat(summary.getErrors()).isEmpty();
+        assertThat(summary.getSummary().get("region")).containsEntry("Sub-Saharan Africa", 75);
         List<Order> orders = repository.getPage(0, 500);
         assertThat(orders).hasSize(290);
         Optional<Order> matched =
