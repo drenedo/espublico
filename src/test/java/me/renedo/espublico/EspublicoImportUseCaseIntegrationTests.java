@@ -36,6 +36,30 @@ class EspublicoImportUseCaseIntegrationTests {
     @Autowired
     private JpaOrderRepository repository;
 
+    @Test
+    void ensure_application_starts_with_a_database_without_errors() {
+        // Given
+        mockUrls();
+
+        // When
+        ImportSummary summary = useCase.execute();
+
+        // Then
+        assertResponseAndData(summary);
+    }
+
+    @Test
+    void ensure_application_continues_on_errors() {
+        // Given
+        mockUrlsWithRetries();
+
+        // When
+        ImportSummary summary = useCase.execute();
+
+        // Then
+        assertResponseAndData(summary);
+    }
+
     private void assertResponseAndData(ImportSummary summary) {
         assertThat(summary.getErrors()).isEmpty();
         assertThat(summary.getSummary().get("region")).containsEntry("Sub-Saharan Africa", 75);
@@ -68,47 +92,23 @@ class EspublicoImportUseCaseIntegrationTests {
     }
 
     private static void mockUrlsWithRetries() {
-        stubFor(get(urlEqualTo("/v1/orders?page=1&max-per-page=500")).inScenario("Test")
+        stubFor(get(urlEqualTo("/v1/orders?page=1&max-per-page=500")).inScenario("Test retries")
                 .whenScenarioStateIs(STARTED)
                 .willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json")
                         .withBodyFile("response.json")));
-        stubFor(get(urlEqualTo("/v1/orders?page=2&max-per-page=500")).inScenario("Test")
+        stubFor(get(urlEqualTo("/v1/orders?page=2&max-per-page=500")).inScenario("Test retries")
                 .whenScenarioStateIs(STARTED)
                 .willReturn(aResponse().withStatus(500).withHeader("Content-Type", "application/json")
                         .withBody("{error: 'some error'}"))
                 .willSetStateTo("One attempt"));
-        stubFor(get(urlEqualTo("/v1/orders?page=2&max-per-page=500")).inScenario("Test")
+        stubFor(get(urlEqualTo("/v1/orders?page=2&max-per-page=500")).inScenario("Test retries")
                 .whenScenarioStateIs("One attempt")
                 .willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json")
                         .withBodyFile("response2.json")));
-        stubFor(get(urlEqualTo("/v1/orders?page=3&max-per-page=500")).inScenario("Test")
+        stubFor(get(urlEqualTo("/v1/orders?page=3&max-per-page=500")).inScenario("Test retries")
                 .whenScenarioStateIs("One attempt")
                 .willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json")
                         .withBodyFile("response3.json")));
-    }
-
-    @Test
-    void ensure_application_starts_with_a_database_without_errors() {
-        // Given
-        mockUrls();
-
-        // When
-        ImportSummary summary = useCase.execute();
-
-        // Then
-        assertResponseAndData(summary);
-    }
-
-    @Test
-    void ensure_application_continues_on_errors() {
-        // Given
-        mockUrlsWithRetries();
-
-        // When
-        ImportSummary summary = useCase.execute();
-
-        // Then
-        assertResponseAndData(summary);
     }
 
     @AfterEach
