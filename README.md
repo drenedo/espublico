@@ -91,9 +91,61 @@ The page size of the blocks of orders to be exported into the file.
 orders.export.page-size=2500
 ```
 
+## Call the application
 
+Once the application is running, the import process can be called using `GET /v1/import` and the export process can be called using `GET /v1/export`.
+These endpoints are not secured and can be called without any authentication.
+Both endpoints returned a json response with the information of the process.
 
+### Example of import response
 
+```json
+{
+  "summary": {
+    "country": {
+      "Benin": 4821,
+      ...
+      "Dominica": 4841,
+      "Indonesia": 4927
+    },
+    "itemType": {
+      "Vegetables": 74840,
+      ...
+      "Cosmetics": 75056,
+      "Beverages": 74937
+    },
+    "salesChannel": {
+      "ONLINE": 449538,
+      "OFFLINE": 449962
+    },
+    "region": {
+      "Australia and Oceania": 72700,
+      "Asia": 131461,
+      ...
+      "Sub-Saharan Africa": 233630
+    },
+    "priority": {
+      "HIGH": 224519,
+      "MEDIUM": 224718,
+      "LOW": 225068,
+      "CRITICAL": 225195
+    }
+  },
+  "errors": [
+    {
+      "page": 1496,
+      "message": "some error"
+    }
+  ]
+}
+```
 
+### Example of export response
+
+```json
+{
+  "path": "/tmp/orders.csv"
+}
+```
 
 
