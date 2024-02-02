@@ -15,7 +15,7 @@ import me.renedo.espublico.orders.infraestructure.rest.HttpOrderRepository.PageD
 @WireMockTest(httpPort = 8089)
 class HttpOrderRepositoryTest {
 
-    private final HttpOrderRepository httpOrderRepository = new HttpOrderRepository("http://127.0.0.1:8089");
+    private final HttpOrderRepository httpOrderRepository = new HttpOrderRepository("http://127.0.0.1:8089", 3, 1);
 
     @Test
     void check_page_and_ensure_mapping_is_correct() {

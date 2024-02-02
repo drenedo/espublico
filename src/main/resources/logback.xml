@@ -6,8 +6,12 @@
         </encoder>
     </appender>
 
-    <!--
+    <!-- Log queries
     <logger name="org.hibernate.SQL" level="DEBUG"/>
+    -->
+
+    <!-- Log rest petitions
+    <logger name="reactor.netty.http.client.HttpClient" level="DEBUG"/>
     -->
 
     <logger name="me.renedo" level="INFO"/>

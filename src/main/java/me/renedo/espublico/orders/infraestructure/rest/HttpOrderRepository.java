@@ -2,30 +2,48 @@ package me.renedo.espublico.orders.infraestructure.rest;
 
 import static java.util.Optional.ofNullable;
 
+import java.time.Duration;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import reactor.netty.http.client.HttpClient;
+import reactor.util.retry.Retry;
 
 @Component
 public class HttpOrderRepository {
 
     private final WebClient webClient;
 
-    public HttpOrderRepository(@Value("${orders.rest.url}") String url) {
+    private final int timesToRetry;
+
+    private final int secondsBetweenRetries;
+
+    public HttpOrderRepository(@Value("${orders.rest.url}") String url, @Value("${orders.rest.times.to.retry}") int timesToRetry,
+            @Value("${orders.rest.seconds.between.retries}") int secondsBetweenRetries) {
+        this.timesToRetry = timesToRetry;
+        this.secondsBetweenRetries = secondsBetweenRetries;
         this.webClient = WebClient.builder()
-                .baseUrl(url).build();
+                .clientConnector(new ReactorClientHttpConnector(
+                        HttpClient.create().wiretap(true)
+                ))
+                .baseUrl(url)
+                .build()
+        ;
     }
 
     public PageDTO getPage(String url) {
         return ofNullable(webClient.get()
                 .uri(url)
                 .retrieve()
-                .toEntity(PageDTO.class).block())
+                .toEntity(PageDTO.class)
+                .retryWhen(Retry.fixedDelay(timesToRetry, Duration.ofSeconds(secondsBetweenRetries)))
+                .block())
                 .map(ResponseEntity::getBody)
                 .orElseThrow(() -> new RuntimeException("Not body"));
     }
