@@ -1,4 +1,4 @@
-# Coding test for "espublico tecnología"
+# Coding challenge for "espublico tecnología"
 
 ## Requirements
 
@@ -11,7 +11,7 @@ To build the application
 - Java >= 17
 - Maven >= 3.0
 
-To launch tests
+To verify the state of the application (tests)
 
 - Java >= 17
 - Maven >= 3.0
@@ -19,14 +19,14 @@ To launch tests
 
 ## Important assumptions
 
-- Some domain classes ar considered not variable, like Priority or Sales channel. On the contrary region, country, item type and sales channel are
+- Some domain classes ar considered not variable, like Priority or Sales channel. On the contrary region, country and item type are
   considered variable entities.
-- Ids and uuids are considered uniques values for each entity. (This is not true in the given example)
+- Ids and uuids are considered uniques values for each entity. (This seems not be true in the given example)
 - Every import will be removed the previous data and replaced with the new one.
 
 ## Extructure of the project
 
-The project is developed following the hexagonal architecture. The main idea is to separate the domain logic from the infrastructure logic.
+The project is developed following an hexagonal architecture. The main idea is to separate the domain logic from the infrastructure logic.
 As usual the project is divided in three main packages: **domain**, **application** and **infrastructure**.
 Also there are another package called **instrumentation** that contains the observability logic.
 
@@ -60,9 +60,7 @@ The database should be initialized with the data provided in the file **schema.s
 
 ### Database configuration
 
-This is a typical configuration used for the database.
-The only custom value is the **orders.jpa.page-size** that is used to define the size
-of transaction when persisting orders.
+This is a typical configuration used for access to the database.
 
 ```properties
 spring.jpa.hibernate.ddl-auto=validate
@@ -75,10 +73,16 @@ spring.datasource.password=test
 
 ### Import configuration
 
-Host of the rest API, page size of the requests and size of the transactions.
+The first three properties are used to configure the rest client.
+The host, the number of times to retry the request and the seconds between retries.
+**orders.import.http.page-size** is used to define the size of the requests when importing orders.
+and **orders.jpa.page-size** is used to define the size
+of transaction when persisting orders.
 
 ```properties
 orders.rest.url=https://kata-espublicotech.g3stiona.com
+orders.rest.times.to.retry=3
+orders.rest.seconds.between.retries=5
 orders.import.http.page-size=500
 orders.import.jpa.page-size=250
 ```
@@ -93,9 +97,11 @@ orders.export.page-size=2500
 
 ## Call the application
 
-Once the application is running, the import process can be called using `GET /v1/import` and the export process can be called using `GET /v1/export`.
+Once the application is running, the import process can be called
+using `GET /v1/import` and the export process can be called using
+`GET /v1/export`. There are another endpoint `GET /v1/import-export` to call both processes at the same time.
 These endpoints are not secured and can be called without any authentication.
-Both endpoints returned a json response with the information of the process.
+All the endpoints returned a json response with the information of the process.
 
 ### Example of import response
 
@@ -148,4 +154,50 @@ Both endpoints returned a json response with the information of the process.
 }
 ```
 
+### Example of import and export
 
+```json
+{
+  "importSummary": {
+    "summary": {
+      "country": {
+        "Benin": 4821,
+        ...
+        "Dominica": 4841,
+        "Indonesia": 4927
+      },
+      "itemType": {
+        "Vegetables": 74840,
+        ...
+        "Cosmetics": 75056,
+        "Beverages": 74937
+      },
+      "salesChannel": {
+        "ONLINE": 449538,
+        "OFFLINE": 449962
+      },
+      "region": {
+        "Australia and Oceania": 72700,
+        "Asia": 131461,
+        ...
+        "Sub-Saharan Africa": 233630
+      },
+      "priority": {
+        "HIGH": 224519,
+        "MEDIUM": 224718,
+        "LOW": 225068,
+        "CRITICAL": 225195
+      }
+    },
+    "errors": [
+      {
+        "page": 1496,
+        "message": "some error"
+      }
+    ]
+  },
+  "exportSummary": {
+    "path": "/tmp/orders.csv"
+  }
+}
+```
