@@ -201,3 +201,27 @@ All the endpoints returned a json response with the information of the process.
   }
 }
 ```
+
+# Final result of the defense of code challenge
+
+In a few words, __failed__ but not clear the reason:
+
+"You are not the person we are looking for"
+
+¯\_(ツ)\_/¯
+
+## Reasons fenced by the interviewers
+
+Not all of them are true, but I will list them all.
+
+- Some efficiency problems
+    - The file in export process is opened many times.
+    - The summary in the import process is not efficient because it needs many RAM. better a count to DB. **IMO very bad solution**. ¯\\\_(ツ)\_/¯
+    - In import process there are two iterations of the same list.
+
+- DDD problems
+    - Object value for the formatted date in the export process.
+    - CSV is persisted in application layer not in infrastructure layer.
+
+-Another problems
+- Client of the api could fail if the host is down. ¯\_(ツ)\_/¯

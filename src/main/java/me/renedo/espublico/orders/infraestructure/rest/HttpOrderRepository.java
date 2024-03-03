@@ -31,6 +31,7 @@ public class HttpOrderRepository {
         this.webClient = WebClient.builder()
                 .clientConnector(new ReactorClientHttpConnector(
                         HttpClient.create().wiretap(true)
+
                 ))
                 .baseUrl(url)
                 .build()
